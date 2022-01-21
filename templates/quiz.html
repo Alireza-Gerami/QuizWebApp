@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ّمسابقه اطلاعات عمومی</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/bulma-modal-fx/dist/css/modal-fx.min.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Mirza:wght@700&display=swap" rel="stylesheet">
+    <style>
+        .button {
+            width: 150px;
+        }
+
+        body,
+        input,
+        button {
+            font-family: 'Mirza', cursive;
+        }
+
+        .title {
+            direction: rtl;
+            line-height: 56px;
+            font-size: 3rem;
+        }
+
+        .input {
+            direction: rtl;
+        }
+
+        .button {
+            margin: 10px 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="section is-centered">
+        <div class="container has-text-centered">
+            {% for question in questions %}
+            <div id="question-{{ question.question_id }}" class="modal">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">{{ question.question_id }} سوال</p>
+                    </header>
+                    <section class="modal-card-body is-warning">
+                        <span> {{ question.title }} </span>
+                        <div class="control is-centered has-text-centered">
+                            <input type="button" class="button is-small choice" value="{{ question.answer[0] }}" choice="{{ question.choices[0] }}" question-id="{{ question.question_id }}">
+                            <input type="button" class="button is-small choice" value="{{ question.answer[1] }}" choice="{{ question.choices[1] }}" question-id="{{ question.question_id }}">
+                            <br>
+                            <input type="button" class="button is-small choice" value="{{ question.answer[2] }}" choice="{{ question.choices[2] }}" question-id="{{ question.question_id }}">
+                            <input type="button" class="button is-small choice" value="{{ question.answer[3] }}" choice="{{ question.choices[3] }}" question-id="{{ question.question_id }}">
+                        </div>
+                    </section>
+                    <footer class="modal-card-foot">
+                        <progress id="step-progress-{{ question.question_id }}" class="progress is-info is-large" value="0" max="100"></progress>
+                    </footer>
+                </div>
+            </div>
+            {% endfor %}
+            <div id="finish" class="modal">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">پایان مسابقه</p>
+                    </header>
+                    <section class="modal-card-body is-warning">
+
+                        <div class="control is-centered has-text-centered">
+                            <a href="/live_scoreboard"><button class="button is-danger is-outlined">مشاهده جدول امتیازات</button></a>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        var progressArr = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110];
+        var timeout_id = 0
+
+        function fillProgress(id) {
+            $(`#step-progress-${id}`).val(0);
+            progressArr.forEach(function(num, index) {
+                timeout_id = setTimeout(function() {
+                    $(`#step-progress-${id}`).val(num);
+                    if (num == 110) {
+                    $.ajax({
+                url: "/check_answer",
+                type: "post",
+                data: {
+                    "question_id": Number(id),
+                    "choice": -1
+                }
+            });
+                        $(`#question-${Number(id)}`).removeClass("is-active");
+                        if (Number(id) + 1 == 11) {
+                            $(`#finish`).addClass("is-active");
+                        } else {
+                            $(`#question-${Number(id) + 1}`).addClass("is-active");
+                            clearTimeout(timeout_id);
+                            fillProgress(Number(id) + 1);
+                        }
+
+                    }
+                }, 1000 * (index + 1));
+            });
+        }
+        $(".choice").click(function() {
+            clearTimeout(timeout_id);
+            $(`#question-${Number($(this).attr("question-id"))}`).removeClass("is-active");
+            $.ajax({
+                url: "/check_answer",
+                type: "post",
+                data: {
+                    "question_id": Number($(this).attr("question-id")),
+                    "choice": Number($(this).attr("choice"))
+                }
+            });
+
+            if (Number($(this).attr("question-id")) + 1 == 11) {
+                $(`#finish`).addClass("is-active");
+            } else {
+                $(`#question-${Number($(this).attr("question-id")) + 1}`).addClass("is-active");
+                fillProgress(Number($(this).attr("question-id")) + 1);
+            }
+        });
+
+        window.onload = (function() {
+            $(`#question-1`).addClass("is-active");
+            fillProgress(1);
+        }())
+    </script>
+</body>
+
+</html>
+<style>
+    .modal-card {
+        height: 85vh;
+        width: 90%;
+        margin: 0 auto;
+    }
+    .modal-card-body>span {
+        font-size: 28px;
+        margin-bottom: 30px;
+        display: block;
+        height: auto;
+    }
+    .control {
+        width: 100%;
+        margin: 0 auto;
+        height: auto;
+    }
+    .button.is-small {
+        padding: 0;
+        width: 100%;
+        font-size: 1.3rem;
+        margin: 10px auto;
+        overflow: auto;
+    }
+    @media screen and (max-width: 768px) {
+        .modal-card {
+            height: 85vh;
+            width: 90%;
+            margin: 0 auto;
+        }
+        .modal-card-body>span {
+            font-size: 28px;
+            margin-bottom: 30px;
+            display: block;
+            height: auto;
+        }
+        .control {
+            width: 100%;
+            margin: 0 auto;
+            height: auto;
+        }
+        .button.is-small {
+            padding: 0;
+            width: 100%;
+            font-size: 1.3rem;
+            margin: 10px auto;
+            overflow: auto;
+        }
+    }
+</style>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ّمسابقه اطلاعات عمومی</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/bulma-modal-fx/dist/css/modal-fx.min.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Mirza:wght@700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <section class="section is-centered">
+        <div class="column is-2 is-offset-5">
+            <form method="POST" action="/set_time">
+                <div class="field">
+                    <div class="control">
+                        <h2>ساعت شروع</h2>
+                        <input class="input is-large" type="text" name="start-hour" placeholder="ساعت" autofocus required>
+                        <input class="input is-large" type="text" name="start-minute" placeholder="دقیقه" autofocus required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <h2>ساعت پایان</h2>
+                        <input class="input is-large" type="text" name="end-hour" placeholder="ساعت" autofocus required>
+                        <input class="input is-large" type="text" name="end-minute" placeholder="دقیقه" autofocus required>
+                    </div>
+                </div>
+                <button class="button is-block is-info is-large is-fullwidth">تمام</button>
+            </form>
+        </div>
+    </section>
+    <script>
+    </script>
+</body>
+</html>

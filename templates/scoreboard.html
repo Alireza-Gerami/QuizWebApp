@@ -1,0 +1,37 @@
+<div class='container is-centered'>
+    <div class='columns is-centered has-text-centered'>
+        <div class='column is-8 has-text-centered'>
+            <h3 class="title has-text-centered">تابلو امتیازات</h3>
+            <table class='table is-bordered is-hoverable'>
+
+                <thead>
+                    <tr>
+                        <th class="has-text-centered">امتیاز</th>
+                        <th class="has-text-centered">شماره دانشجویی</th>
+                        <th class="has-text-centered">نام کاربری</th>
+                        <th class="has-text-centered">رتبه</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for user in scoreboard %}
+                    <tr>
+                        <td>
+                            <input class="input  has-text-centered is-rounded is-link" value="{{ user.score }}" readonly>
+                        </td>
+                        <td>
+                            <input class="input  has-text-centered is-rounded is-link" value="{{ user.studentnumber }}" readonly>
+                        </td>
+                        <td>
+                            <input class="input  has-text-centered is-rounded is-link" value="{{ user.name }}" readonly>
+                        </td>
+                        <td>
+                            <input class="input  has-text-centered is-rounded is-link" value="{{ loop.index }}" readonly>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
