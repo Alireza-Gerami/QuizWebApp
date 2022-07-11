@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, session, redirect, url_for, f
 import datetime
 import json
 import pytz
-
+from decouple import config
 tz_tehran = pytz.timezone('Asia/Tehran')
 
 
@@ -18,13 +18,14 @@ class User:
 
 with open('static/questions.json', 'r', encoding='utf-8') as file:
     questions = json.loads(file.read())
-with open('static/config.json', 'r') as file:
-    admin_info = json.loads(file.read())
+admin_usename = config('ADMIN_USERNAME')
+admin_studentnumner = config('ADMIN_STUDENTNUMBER')
+
 scoreboard_user = []
 flag = 1
 start_time, end_time = '', ''
 app = Flask(__name__)
-app.secret_key = "64SRG2as21545454d6655845dfDFG"
+app.secret_key = config('SECRET_KEY')
 
 
 @app.route('/')
@@ -55,7 +56,7 @@ def login():
         name = request.form.get('name')
         studentnumber = request.form.get('studentnumber')
         time_now = datetime.datetime.now(tz_tehran).time().strftime("%H:%M")
-        if name != admin_info['name'] and studentnumber != admin_info['studentnumber']:
+        if name != admin_username and studentnumber != admin_studentnumber:
             if time_now > end_time:
                 return redirect(url_for('index'))
             if time_now < start_time:
@@ -68,7 +69,7 @@ def login():
             session['studentnumber'] = studentnumber
             session['score'] = 0
             session['answered'] = ''
-            if session['name'] == admin_info['name'] and session['studentnumber'] == admin_info['studentnumber']:
+            if session['name'] == admin_username and session['studentnumber'] == admin_studentnumber:
                 return redirect(url_for('dashboard'))
             else:
                 scoreboard_user.append(User(session['name'], session['studentnumber'], session['score']))
@@ -84,7 +85,7 @@ def check_answer():
         question_id = int(request.form.get('question_id'))
         choice = request.form.get('choice')
         if str(question_id) not in session['answered']:
-            if session['name'] != admin_info['name'] and session['studentnumber'] != admin_info['studentnumber']:
+            if session['name'] != admin_username and session['studentnumber'] != admin_studentnumber:
                 session['answered'] += str(question_id)
                 for question in questions:
                     if question['question_id'] == question_id and question['correct'] == choice:
